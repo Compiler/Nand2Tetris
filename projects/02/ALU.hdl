@@ -9,9 +9,9 @@
  * x+y, x-y, y-x, 0, 1, -1, x, y, -x, -y, !x, !y,
  * x+1, y+1, x-1, y-1, x&y, x|y on two 16-bit inputs, 
  * according to 6 input bits denoted zx,nx,zy,ny,f,no.
- * In addition, the ALU computes two 1-bit outputs:
- * if the ALU output == 0, zr is set to 1; otherwise zr is set to 0;
- * if the ALU output < 0, ng is set to 1; otherwise ng is set to 0.
+ * In addition, the ALU computes two 1-bit finals:
+ * if the ALU final == 0, zr is set to 1; otherwise zr is set to 0;
+ * if the ALU final < 0, ng is set to 1; otherwise ng is set to 0.
  */
 
 // Implementation: the ALU logic manipulates the x and y inputs
@@ -34,34 +34,52 @@ CHIP ALU {
         zy, // zero the y input?
         ny, // negate the y input?
         f,  // compute out = x + y (if 1) or x & y (if 0)
-        no; // negate the out output?
+        no; // negate the out final?
 
     OUT 
-        out[16], // 16-bit output
+        out[16], // 16-bit final
         zr, // 1 if (out == 0), 0 otherwise
         ng; // 1 if (out < 0),  0 otherwise
 
     PARTS:
     //zx
-    Mux16(a=x, b=false, sel=zx, out=zxo);
+    Mux16(a=x, b=false, sel=zx, out=x1);
 
     //nx
-    Not16(in=x, out=notx);
-    Mux16(a=x, b=notx, sel=nx, out=nxo);
+    Not16(in=x1, out=notx);
+    Mux16(a=x1, b=notx, sel=nx, out=x2);
 
     //zy
-    Mux16(a=y, b=false, sel=zy, out=zyo);
+    Mux16(a=y, b=false, sel=zy, out=y1);
 
     //ny
-    Not16(in=y, out=noty);
-    Mux16(a=y, b=noty, sel=ny, out=nyo);
+    Not16(in=y1, out=noty);
+    Mux16(a=y1, b=noty, sel=ny, out=y2);
 
     //f
-    And16(a=x, b=y, out=xandy);
-    Add16(a=x, b=y, out=xplusy);
-    Mux16(a=xandy, b=xplusy, sel=f, out=fo);
+    And16(a=x2, b=y2, out=xandy);
+    //2s complement add
+   //Not16(in=x2, out=nx2);
+   //Not16(in=y2, out=ny2);
+   //Inc16(in=nx2, out=twosx);
+   //Inc16(in=ny2, out=twosy);
+    //Add16(a=twosx, b=twosy, out=xplusy);
+    Add16(a=x2, b=y2, out=xplusy);
+    Mux16(a=xandy, b=xplusy, sel=f, out=w1);
 
     //no
-    Not16(in=fo, out=noo);
-    Mux16(a=noo, b=fo, sel=no, out=out);
+    Not16(in=w1, out=nw1);
+    Mux16(a=w1, b=nw1, sel=no, out=final);
+    And16(a=final, b=true, out=out); //final finalized
+
+    
+    // if (out < 0) set ng = 1
+
+    And16(a=final, b=true, out[15]=ng, out[0..14]=other);
+
+
+    // if (out == 0) set zr = 1
+
+    CheckZero(x=final, out=zr);
+    
 }

@@ -1,0 +1,27 @@
+
+
+CHIP CheckZero{
+    IN  
+        x[16];
+
+    OUT 
+        out;
+
+    PARTS:
+    And(a=x[0], b=true, out=zr0);
+    And(a=x[1], b=zr0, out=zr1);
+    And(a=x[2], b=zr1, out=zr2);
+    And(a=x[3], b=zr2, out=zr3);
+    And(a=x[4], b=zr3, out=zr4);
+    And(a=x[5], b=zr4, out=zr5);
+    And(a=x[6], b=zr5, out=zr6);
+    And(a=x[7], b=zr6, out=zr7);
+    And(a=x[8], b=zr7, out=zr8);
+    And(a=x[9], b=zr8, out=zr9);
+    And(a=x[10], b=zr9, out=zr10);
+    And(a=x[11], b=zr10, out=zr11);
+    And(a=x[12], b=zr11, out=zr12);
+    And(a=x[13], b=zr12, out=zr13);
+    And(a=x[14], b=zr13, out=zr14);
+    And(a=x[15], b=zr14, out=out);
+}

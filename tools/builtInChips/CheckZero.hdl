@@ -1,0 +1,28 @@
+
+
+CHIP CheckZero{
+    IN  
+        x[16];
+
+    OUT 
+        out;
+
+    PARTS:
+    Or(a=x[0], b=false, out=zr0);
+    Or(a=x[1], b=zr0, out=zr1);
+    Or(a=x[2], b=zr1, out=zr2);
+    Or(a=x[3], b=zr2, out=zr3);
+    Or(a=x[4], b=zr3, out=zr4);
+    Or(a=x[5], b=zr4, out=zr5);
+    Or(a=x[6], b=zr5, out=zr6);
+    Or(a=x[7], b=zr6, out=zr7);
+    Or(a=x[8], b=zr7, out=zr8);
+    Or(a=x[9], b=zr8, out=zr9);
+    Or(a=x[10], b=zr9, out=zr10);
+    Or(a=x[11], b=zr10, out=zr11);
+    Or(a=x[12], b=zr11, out=zr12);
+    Or(a=x[13], b=zr12, out=zr13);
+    Or(a=x[14], b=zr13, out=zr14);
+    Or(a=x[15], b=zr14, out=zr15);
+    Not(in=zr15, out=out);
+}
